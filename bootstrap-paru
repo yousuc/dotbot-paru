@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Check if paru is already installed
+if type paru > /dev/null 2>&1; then
+  exit
+fi
+
+START=$(pwd)
+BUILDROOT="$(mktemp -d)"
+
+# Make sure we can even build packages on arch linux.
+sudo pacman -S --needed --noconfirm base-devel git
+
+mkdir -p "$BUILDROOT"
+cd "$BUILDROOT" || exit 1
+
+cd $BUILDROOT || exit 1
+git clone "https://aur.archlinux.org/paru.git"
+
+cd "$BUILDROOT/paru" || exit 1
+makepkg --syncdeps --install --noconfirm
+
+cd "$START" || exit 1
+rm -rf "$BUILDROOT"
+
+if ! type paru > /dev/null 2>&1; then
+  echo "paru installation failed"
+  exit 1
+fi
